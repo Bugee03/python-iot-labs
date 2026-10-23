@@ -10,7 +10,7 @@ class UARTReader:
         self.connection = None
 
 
-    def connection(self):
+    def connect(self):
 
         self.connection = serial.Serial(self.port, self.baudrate, timeout=1)
 

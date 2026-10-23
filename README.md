@@ -1,89 +1,45 @@
-# Python AI Labs
+<div align="center">
 
-This repository documents my structured learning and practical experiments in:
+# 🌐 Python IoT Labs
 
-- Python programming
-- Artificial Intelligence
-- Machine Learning
-- Data Processing
-- Engineering-oriented problem solving
+**Python on the host side of embedded systems: reading microcontroller telemetry over UART, storing it, simulating sensors, testing.**
 
-The goal is to build strong foundations in AI while maintaining an engineering mindset.
+![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
+![pyserial](https://img.shields.io/badge/UART-pyserial-e0af68)
+![SQLite](https://img.shields.io/badge/storage-SQLite-003B57?logo=sqlite&logoColor=white)
+![pytest](https://img.shields.io/badge/tests-pytest-0A9EDC?logo=pytest&logoColor=white)
 
----
+</div>
 
-# 🎯 Objectives
+> **RU:** Python на стороне компьютера: читаем телеметрию с микроконтроллера по UART (JSON), пишем в SQLite, симулируем датчики, тестируем.
+> **TR:** Bilgisayar tarafında Python: mikrodenetleyiciden UART ile telemetri (JSON) okuma, SQLite'a kaydetme, sensör simülasyonu, test.
 
-- Master Python fundamentals
-- Understand data structures and algorithms
-- Work with NumPy and Pandas
-- Visualize data using Matplotlib
-- Implement machine learning models
-- Apply AI concepts to real engineering problems
+## 🗂️ Projects
 
----
+| Folder | What it does |
+|---|---|
+| [`projects/uart_sqlite_gateway/`](projects/uart_sqlite_gateway) | gateway: reads one JSON line per measurement from an STM32 / MSP430 / ESP32 over UART (115200 baud) → SQLite table `measurements` (timestamp, temperature, current, vibration) |
+| [`projects/sensor_sim_gateway/`](projects/sensor_sim_gateway) | sensor simulator (JSON at 1 Hz) + gateway that reads it, project layout `src/ tests/`, pytest |
 
-# 📂 Repository Structure
+```mermaid
+flowchart LR
+    MCU["MCU<br/>STM32 · MSP430 · ESP32"] -- "UART JSON<br/>{temperature, current, vibration}" --> GW["Python gateway<br/>pyserial"]
+    SIM["sensor simulator<br/>1 Hz"] -. "same JSON" .-> GW
+    GW --> DB[("SQLite<br/>measurements")]
+    DB -.-> NEXT["next: MQTT · dashboard · anomaly detection"]
+```
 
-python-ai-labs/
-│
-├── basics/ Python fundamentals
-├── math/ Linear algebra & statistics
-├── data/ Data processing experiments
-├── ml/ Machine learning models
-├── visualization/ Plots and data analysis
-└── README.md
+## 🚀 Run
 
+```bash
+cd projects/uart_sqlite_gateway
+python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+# set PORT in src/iot_gateway/gateway/main.py (e.g. /dev/tty.usbmodem*)
+cd src/iot_gateway/gateway && python3 main.py
 
----
+cd projects/sensor_sim_gateway/src/sensor_sim && python3 simulator.py   # prints JSON every second
+```
 
-# 🧠 Learning Focus
-
-This repository is focused on:
-
-- Writing clean and structured code
-- Understanding algorithms instead of copying models
-- Building intuition behind ML concepts
-- Connecting AI with embedded and control systems
-
----
-
-# 🔧 Technologies Used
-
-- Python 3.x
-- NumPy
-- Pandas
-- Matplotlib
-- Scikit-learn
-
-Future:
-- PyTorch / TensorFlow
-- Signal processing integration
-- AI + Embedded systems
-
----
-
-# 🚀 Roadmap
-
-Phase 1:
-- Python fundamentals
-- Math review (linear algebra, probability)
-
-Phase 2:
-- Supervised learning models
-- Data preprocessing techniques
-
-Phase 3:
-- Neural networks
-- Time-series and signal analysis
-
-Phase 4:
-- AI integration with hardware systems
-
----
-
-# 👨‍💻 Author
-
-Electrical & Electronics Engineering Student  
-Embedded Systems • Control • AI Integration
-  
+## 🛣️ Next
+- [ ] Publish to an MQTT broker (`paho-mqtt` is already in requirements)
+- [ ] Live plot / dashboard, then simple anomaly detection on current and vibration
